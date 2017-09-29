@@ -1,36 +1,47 @@
-import errorRegister, {Authorization} from 'error-register'
+import 'es6-proxy'
 
+import errorRegister, { A, B, C, D } from 'error-registry'
 
 describe('initialization', () => {
 
-//+ should throw when using mergeReducers before "auto"
-//++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-      it('?', () => {
+        it('should be able to create a custom error', () => {
 
+            errorRegister("Range>A");
 
-const errorsAZ = ['Authorization','Range>InvalidArgument','Reference>Connection','Inter','GraphQl']
+            const err = new A("a1");
 
-        const init = function(errorsA) {
+            expect(err).toBeInstanceOf(A);
+            expect(err).toBeInstanceOf(Error);
+            expect(err).toBeInstanceOf(RangeError);
+        })
 
-          let errors = errorRegister(errorsA);
+        it('should be able to create muilt-custom error', () => {
 
-          ['RangeError','ReferenceError','SyntaxError','TypeError'].forEach(name => console.info(`-=> ${name}(message, fileName, lineNumber)`))
+            errorRegister(["B","Reference>C"]);
 
+            const err1 = new B("b1");
 
-                    console.info(`errors 1`,new errors.Authorization("boo"));
-                    console.info(`errors 2`,new Authorization("boo"));
+            expect(err1).toBeInstanceOf(B);
+            expect(err1).toBeInstanceOf(Error);
 
+            const err2 = new C("c1");
 
-          for(let name in errors){
-            //global[`${name}Error`] = errors[name];
-            console.info(`-=> ${name}Error(message, args = {}, rootCause = null)`);
-          }
-          console.log();
-        }
+            expect(err2).toBeInstanceOf(C);
+            expect(err2).toBeInstanceOf(Error);
+            expect(err2).toBeInstanceOf(ReferenceError);
+        })
 
-init(errorsAZ)
-console.info(`Authorization 3`,new Authorization("123"));
-      })
+        it('should return the created errors', () => {
+          const result = errorRegister("Z");
+          // should only return the error you want Registed
+          expect(Object.keys(result)).toEqual(["Z"]);
+          const err = new result.Z("zzz")
+          expect(err).toBeInstanceOf(Error);
+          expect(err.name).toEqual("Z");
+          expect(err.message).toEqual("zzz");
+          expect(!isNaN(err.processId));
+          expect(err.userAgent).toContain("Node.js")
+        })
 
 })
