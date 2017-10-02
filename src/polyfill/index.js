@@ -4,8 +4,6 @@
 //====== !!! THIS IS USED ON SERVER & CLIENT !!! ======
 //=====================================================
 
-
-
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!! HERE BE DRAGONS
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -35,3 +33,7 @@
                                 && ! path.endsWith(".test.js")
                                 && ! path.endsWith(".js.map"))
                 .map( path => module.exports[path.match(/([^\/]+)(?=\.\w+$)/)[0]] = modules(path) );
+
+  module.exports.list = ()=>{
+    return module.exports.reduce((listOfpolyfills,polyfillName)=>listOfpolyfills.concat(polyfillName),[])
+  }

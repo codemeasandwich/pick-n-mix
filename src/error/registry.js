@@ -1,4 +1,5 @@
 'use strict';
+require('es6-proxy')
 
 const ErrorStackParser = require('error-stack-parser');
 /*
@@ -127,8 +128,8 @@ function errorRegistry (errorNamesA){
 }
 
 
-module.exports = new Proxy({}, {
-  get: function(target, name) {
+module.exports =  {
+  get property(name) {
 
     if(name === "default")
       return errorRegistry
@@ -138,4 +139,4 @@ module.exports = new Proxy({}, {
 
     return registry[name]
   }
-});
+};

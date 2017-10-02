@@ -65,4 +65,4 @@ if( ! ('group' in console)){
 
 }
 
-module.exports = "console.group, console.groupEnd"
+module.exports = ["console.group", "console.groupEnd"]

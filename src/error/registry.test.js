@@ -1,6 +1,6 @@
 import 'es6-proxy'
 
-import errorRegister, { A, B, C, D } from 'error-registry'
+import errorRegister, { A, B, C, D } from './registry'
 
 describe('initialization', () => {
 

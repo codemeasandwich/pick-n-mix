@@ -17,4 +17,4 @@ for(let propName in _tableO){
   extesionNames.push(`"".${colorNameS}`[colorNameS]);
 }
 
-module.exports = extesionNames.join()
+module.exports = extesionNames
