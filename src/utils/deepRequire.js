@@ -1,4 +1,7 @@
-/*
+if(!!process && typeof process !== 'object'){
+  throw new Error("deepRequire need to be run on Node server")
+}
+
 var fs = require('fs');
 var path = require('path');
 
@@ -22,17 +25,17 @@ function getFilesFromDir(dir, fileTypes) {
   walkDir(dir);
   return filesToReturn;
 }
+const re = /(?:\.([^.]+))?$/;
 
-module.exports = getFilesFromDir(__dirname, [".js"]).reduce((packages,file) =>{
+module.exports = (dirname,selector=["js"])=>getFilesFromDir(dirname, selector.map(ext=>`.${ext}`)).reduce((packages,file) =>{
 
-  if(file === "/index.js")
-  return packages
+  if(file === "/index.js")  return packages
+  //if(file[0] !== "/") file = "/"+file;
 
-  const pathParts = file.replace(".js","").split("/").slice(1)
+  const pathParts = file.replace(re.exec(file)[0],"").split("/").slice(1)
   if(pathParts[pathParts.length-1] === "index")
   pathParts.pop()
 
-  packages[pathParts.join("_")] = require(`./${file}`)
+  packages[pathParts.join("_")] = require(dirname+`/${file}`)
   return packages;
 },{});
-*/
