@@ -127,9 +127,8 @@ function errorRegistry (errorNamesA){
     },{}) // END reduce
 }
 
-
-module.exports =  {
-  get property(name) {
+module.exports = new Proxy({}, {
+  get: function(target, name) {
 
     if(name === "default")
       return errorRegistry
@@ -139,4 +138,4 @@ module.exports =  {
 
     return registry[name]
   }
-};
+});
