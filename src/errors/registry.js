@@ -16,6 +16,8 @@ function errorRegistry (errorNamesA){
   else if (!Array.isArray(errorNamesA))
       throw new Error(`You are trying to register with an unknown type of "${typeof errorNamesA}" in '${JSON.stringify(errorNamesA)}'`)
 
+  errorNamesA = errorNamesA.map(errorName => errorName.endsWith("Error") ? errorName : errorName + "Error" )
+
 //=====================================================
 //=============================== Loop over Error Names
 //=====================================================
@@ -44,7 +46,7 @@ function errorRegistry (errorNamesA){
             let errorO = new Error();
             let stackA = ErrorStackParser.parse(errorO);
 
-            this.type = this.name; // 'Error' coming from Object.create(Error.prototype)
+            this.type = name;//this.name; // 'Error' coming from Object.create(Error.prototype)
 
             if(rootCause){
                this.rootCause = rootCause;
@@ -81,12 +83,13 @@ function errorRegistry (errorNamesA){
 //++++++++++++++++++++++++++++++++++++++++ error value
 //++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-            this.name      = name;//stackA[0].functionName;//.split('.').pop();
+          //  this.name      = name;//stackA[0].functionName;//.split('.').pop();
             this.message   = message;
             this.fileName     = stackA[1].fileName;
             this.lineNumber   = stackA[1].lineNumber;
             this.columnNumber = stackA[1].columnNumber;
             this.functionName = stackA[1].functionName;
+            this.createdAt = Date.now();
 
 //++++++++++++++++++++++++++++++++++++++++ stack trace
 //++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -130,7 +133,7 @@ function errorRegistry (errorNamesA){
 module.exports = new Proxy({}, {
   get: function(target, name) {
 
-    if(name === "default")
+    if(name === "default"||name === "registry")
       return errorRegistry
 
     if(!(name in registry) || "constructor" === name)

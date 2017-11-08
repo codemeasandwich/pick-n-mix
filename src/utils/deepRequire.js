@@ -1,4 +1,4 @@
-if(!!process && typeof process !== 'object'){
+if(!global.process){//(!!process && typeof process !== 'object'){
   throw new Error("deepRequire need to be run on Node server")
 }
 
