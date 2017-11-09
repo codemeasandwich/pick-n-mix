@@ -47,10 +47,10 @@ function errorRegistry (errorNamesA){
             let stackA = ErrorStackParser.parse(errorO);
 
             this.type = name;//this.name; // 'Error' coming from Object.create(Error.prototype)
-
+            this.name = prototypeName
             if(rootCause){
                this.rootCause = rootCause;
-               this.type = rootCause.name;
+               this.name = rootCause.name;
             }
 
             if(args){
