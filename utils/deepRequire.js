@@ -27,15 +27,19 @@ function getFilesFromDir(dir, fileTypes) {
 }
 const re = /(?:\.([^.]+))?$/;
 
-module.exports = (dirname,selector=["js"])=>getFilesFromDir(dirname, selector.map(ext=>`.${ext}`)).reduce((packages,file) =>{
+module.exports = function(dirname,selector){
+  selector = selector || ["js"]
+  return getFilesFromDir(dirname, selector.map(ext=>`.${ext}`)).reduce((packages,file) =>{
 
-  if(file === "/index.js")  return packages
-  //if(file[0] !== "/") file = "/"+file;
+    if(file === "/index.js")  return packages
+    //if(file[0] !== "/") file = "/"+file;
 
-  const pathParts = file.replace(re.exec(file)[0],"").split("/").slice(1)
-  if(pathParts[pathParts.length-1] === "index")
-  pathParts.pop()
+    const pathParts = file.replace(re.exec(file)[0],"").split("/").slice(1)
+    if(pathParts[pathParts.length-1] === "index")
+    pathParts.pop()
 
-  packages[pathParts.join("_")] = require(dirname+`/${file}`)
-  return packages;
-},{});
+    packages[pathParts.join("_")] = require(dirname+`/${file}`)
+    return packages;
+  },{});
+
+}
