@@ -1,6 +1,15 @@
 # pick-n-mix
 ## a set of tools, untils and polyfulls for writing declarative javascript apps
 
+- [errors](#errors)
+    + [Example:](#example)
+- [deepRequire](#deeprequire)
+- [promisify](#promisify)
+- [graphql Scheam Builder](#graphql-scheam-builder)
+  * [Overview](#overview)
+  * [How to use](#how-to-use)
+  * [Using the above code snippets](#using-the-above-code-snippets)
+
 # errors
 A extension mechanism for JavaScript errors
 
@@ -169,4 +178,142 @@ userP.get_pic().then( function(result){
 })
 
 console.log(userP.name()) // "bob"
+```
+
+# graphql Scheam Builder
+
+## Overview
+
+Each custom graphql **type** will have its own file.
+
+The file looks like
+```JS
+module.exports = {
+  description:"Error info",
+  model:`{
+    type:String!, // type of error
+    message:String!, // 'error message'
+    args:String!,//arguments
+    trace:String!// 'stack trace'
+  }`
+}
+```
+This will be outputted
+
+```
+ # Error info
+ #* **type** - type of error,
+ #* **message** - 'error message',
+ #* **args** - arguments,
+ #* **trace** - 'stack trace'
+ type Error{
+     type:String,
+      message:String,
+      args:String,
+      trace:String
+     }
+```
+**🛈 Things to know:**
+* Each type will **also** have a `Input` version generated for convenience.
+```
+ # Error info
+ #* **type** - type of error,
+ #* **message** - 'error message',
+ #* **args** - arguments,
+ #* **trace** - 'stack trace'
+ input InputError{
+     type:String,
+      message:String,
+      args:String,
+      trace:String
+     }
+```
+
+
+## How to use
+
+Scheam Builder is designed to be use with [deepRequire](https://github.com/codemeasandwich/pick-n-mix/tree/master/utils) to pull in your types.
+
+### An Example schemas:
+
+    sample/
+     ├─ index.js
+     ├─ Error.js
+     ├─ partys.js
+     └─ accounts/
+         └─ user/
+             ├─ index.js
+             └─ item.js
+
+[Example Source](https://github.com/codemeasandwich/pick-n-mix/tree/master/schemaQL/sample)
+
+
+You will need to specify the "Query" and "Mutation" strings
+
+```
+const Query = `
+  # A GraphQL API for SDMTS-PA App
+   type Query {
+     readUser(id:String):user,
+     config:Config,
+   }`
+
+const Mutation = `
+   type Mutation {
+     logError(type:String!, message:String!,args:String!,trace:String!):Error
+   }
+`
+```
+
+`Query` and `Mutation` Api function will map to the same object
+
+```
+var root = {
+// Query
+readUser: (args)=> db.getUser({_id:args.id}),
+config: () => fs.readFileAsync(__dirname + "/config.json"),
+
+// Mutation
+logError: (args)=>{
+  const type      = args.type;
+  const message   = args.message;
+  const errorArgs = args.args;
+  const trace     = args.trace;
+
+  return db.saveError(message,{type,errorArgs},trace)
+           .then( x => args ) // return the error back to use
+  },
+}
+
+```
+
+## Using the above code snippets
+
+```JS
+
+const deepRequire = require('pick-n-mix/utils/deepRequire');
+const schemas = deepRequire("./My_schemas_dir");
+
+const schemaQL    = require("pick-n-mix/schemaQL");
+const schemaTypes = schemaQL(schemas);
+
+const buildSchema = require('graphql').buildSchema;
+const schema = buildSchema(schemaTypes
+                            + " " + Query  
+                            + " " +  Mutation)
+
+// ================== Express Server
+// =================================
+
+const graphqlHTTP = require('express-graphql');
+const express     = require('express');
+
+const app = express();
+
+// ======================== Graph QL
+// =================================
+
+  app.use('/graphql', graphqlHTTP({
+    schema: schema,    rootValue: root,    graphiql: true,
+  }));
 ```
