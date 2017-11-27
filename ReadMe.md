@@ -252,7 +252,7 @@ You will need to specify the "Query" and "Mutation" strings
 
 ```
 const Query = `
-  # A GraphQL API for SDMTS-PA App
+  # A GraphQL API for my App
    type Query {
      readUser(id:String):user,
      config:Config,

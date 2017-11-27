@@ -1,6 +1,6 @@
 {
   "name": "pick-n-mix",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "a set of tools, untils and polyfulls for writing declarative javascript apps",
   "main": "src/index.js",
   "scripts": {
